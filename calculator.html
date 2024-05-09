@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Very Simple Calculator</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #2D2C2A;
+            border: 1px solid #252422;
+            border-radius: 10px;
+            width: 230px;
+            padding: 20px;
+            box-shadow: 0 0 10px black;
+        }
+
+        .display {
+            font-size: 24px;
+            text-align: right;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            color: black;
+            border-radius: 5px;
+        }
+
+        .keypad button {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+            margin: 2px;
+            background-color: #fa9f15;
+            color: #2D2C2A;
+            border: 1px solid #b4720e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .keypad button:hover {
+            background-color: #f7c881;
+        }
+
+        #mode {
+            background-color: #2ecc71;
+            color: white;
+            border: 1px solid #27ae60;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 97%;
+            font-size: 16px;
+        }
+
+        #mode:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="keypad">
+            <button onclick="addToDisplay('7')">7</button>
+            <button onclick="addToDisplay('8')">8</button>
+            <button onclick="addToDisplay('9')">9</button>
+            <button onclick="setOperator('-')">-</button><br>
+
+            <button onclick="addToDisplay('4')">4</button>
+            <button onclick="addToDisplay('5')">5</button>
+            <button onclick="addToDisplay('6')">6</button>
+            <button onclick="setOperator('/')">/</button><br>
+
+            <button onclick="addToDisplay('1')">1</button>
+            <button onclick="addToDisplay('2')">2</button>
+            <button onclick="addToDisplay('3')">3</button>
+            <button onclick="setOperator('*')">*</button><br>
+
+            <button onclick="addToDisplay('0')">0</button>
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="calculateResult()">=</button>
+            <button onclick="setOperator('+')">+</button><br>
+
+            <button id="mode" onclick="toggleStrictIntegerMode()">Strict Integer Mode (OFF)</button>
+        </div>
+    </div>
+    <script>
+        let displayValue = '0';
+        let operator = '';
+        let firstOperand = '';
+        let result = 0;
+        let inStrictIntegerMode = false;
+
+        function updateDisplay() {
+            document.getElementById('display').textContent = displayValue;
+        }
+
+        function addToDisplay(value) {
+            if (operator === '=') {
+                displayValue = value;
+                operator = '';
+            } else {
+                if (displayValue === '0' || result !== 0) {
+                    displayValue = value;
+                    result = 0;
+                } else {
+                    displayValue += value;
+                }
+            }
+            if (displayValue.length > 18) {
+              displayValue = displayValue.substring(0, 18);
+            }
+
+            updateDisplay();
+        }
+
+        function setOperator(op) {
+            if (firstOperand === '') {
+                if (displayValue !== '0') {
+                    firstOperand = displayValue;
+                    displayValue = '0';
+                    operator = op;
+                }
+            } else {
+                calculateResult();
+                operator = op;
+            }
+        }
+
+        function calculateResult() {
+            if (operator && firstOperand !== '') {
+                const num1 = parseFloat(firstOperand);
+                const num2 = parseFloat(displayValue);
+
+                switch (operator) {
+                    case '+':
+                        result = num1 + num2;
+                        displayValue = result;
+                        break;
+                    case '-':
+                        result = num1 - num2;
+                        displayValue = result;
+                        break;
+                    case '*':
+                        result = num1 * num2;
+                        displayValue = result;
+                        break;
+                    case '/':
+                        if (inStrictIntegerMode) {
+                            result = Math.floor(num1 / num2);
+                            displayValue = result;
+                        } else {
+                            result = num1 / num2;
+                            displayValue = result;
+                        }
+                        break;
+                }
+
+                operator = '';
+                firstOperand = result;
+                updateDisplay();
+            }
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            firstOperand = '';
+            operator = '';
+            result = 0;
+            updateDisplay();
+        }
+
+        function toggleStrictIntegerMode() {
+            inStrictIntegerMode = !inStrictIntegerMode;
+            const modeButton = document.getElementById('mode');
+            modeButton.textContent = inStrictIntegerMode ? 'Strict Integer Mode (ON)' : 'Strict Integer Mode (OFF)';
+        }
+    </script>
+</body>
+
+</html>
